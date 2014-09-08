@@ -1,0 +1,13 @@
+life_list_api:
+    resource: "@LifeListApiBundle/Resources/config/routing.yml"
+    type: rest
+    prefix:   /api
+    options:
+        expose: true
+
+life_list:
+    resource: "@LifeListLifeListBundle/Resources/config/routing.yml"
+    prefix:   /
+
+fos_js_routing:
+    resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"

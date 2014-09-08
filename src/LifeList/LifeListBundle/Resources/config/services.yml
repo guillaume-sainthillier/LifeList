@@ -1,0 +1,11 @@
+parameters:
+#    life_list_life_list.example.class: LifeList\LifeListBundle\Example
+
+services:
+    life.twig.life_extension:
+        class: LifeList\LifeListBundle\Twig\LifeListExtension
+        tags:
+            - { name: twig.extension }
+#    life_list_life_list.example:
+#        class: %life_list_life_list.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

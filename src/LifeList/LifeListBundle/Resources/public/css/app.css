@@ -1,0 +1,41 @@
+.completed label{
+    text-decoration: line-through;
+}
+
+tr {
+    height: 50px;
+}
+
+.table>tbody>tr>td {
+    vertical-align: middle;
+}
+
+.delete {
+    width: 100px;
+}
+
+.label {
+    margin-right: 5px;
+    display: inline-block;
+    padding: .5em .8em .5em;
+}
+
+.label i {
+    margin-left: 5px;
+}
+
+.editing .view, .edit {
+    display: none;
+}
+
+.editing .edit, .view {
+    display: inline-block;
+}
+
+i.edit:hover {
+    cursor: pointer;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}

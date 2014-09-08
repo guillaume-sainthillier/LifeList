@@ -1,0 +1,7 @@
+life_list_index:
+    path:     /
+    defaults: { _controller: LifeListLifeListBundle:Default:index }
+
+ll_lists_index:
+    path:     /lists
+    defaults: { _controller: LifeListLifeListBundle:Default:lists }

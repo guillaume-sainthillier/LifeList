@@ -1,0 +1,57 @@
+api_lists:
+    type: rest
+    path:     /lists
+    defaults: { _controller: LifeListApiBundle:Liste:getLists, _format: json }
+    requirements:
+        _method: GET
+        
+api_list_add:
+    type: rest
+    path:     /lists
+    defaults: { _controller: LifeListApiBundle:Liste:addList, _format: json }
+    requirements:
+        _method: POST
+        
+api_list_edit:
+    type: rest
+    path:     /lists/{id}
+    defaults: { _controller: LifeListApiBundle:Liste:editList, _format: json }
+    requirements:
+        _method: POST
+        
+api_list_delete:
+    type: rest
+    path:     /lists/{id}
+    defaults: { _controller: LifeListApiBundle:Liste:deleteList, _format: json }
+    requirements:
+        _method: DELETE
+        
+api_todos:
+    type: rest
+    path:     /todos
+    defaults: { _controller: LifeListApiBundle:Todos:getTodos, _format: json }
+    requirements:
+        _method: GET
+        
+api_todo_add:
+    type: rest
+    path:     /todos
+    defaults: { _controller: LifeListApiBundle:Todos:addTodo, _format: json }
+    requirements:
+        _method: POST
+        
+api_todo_edit:
+    type: rest
+    path:     /todos/{id}
+    defaults: { _controller: LifeListApiBundle:Todos:editTodo, _format: json }
+    requirements:
+        _method: POST
+        id: (\d+)
+        
+api_todo_delete:
+    type: rest
+    path:     /todos/{id}
+    defaults: { _controller: LifeListApiBundle:Todos:deleteTodo, _format: json }
+    requirements:
+        _method: DELETE
+        id: (\d+)

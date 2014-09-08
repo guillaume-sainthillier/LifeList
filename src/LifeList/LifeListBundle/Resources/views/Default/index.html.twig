@@ -1,0 +1,12 @@
+{% extends "::base.html"|extends(app.request) %}
+
+{% block title %}Bienvenue !{% endblock %}
+
+{% block body %}
+    <div ng-controller="AccueilCtrl">
+        Bienvenue ! 
+        <ul>
+            <li><a href="{{ path('ll_lists_index') }}" data-pjax>Mes listes</a></li>
+        </ul>
+    </div>
+{% endblock %}

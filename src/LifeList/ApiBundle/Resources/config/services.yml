@@ -1,0 +1,7 @@
+parameters:
+#    life_list_api.example.class: LifeList\ApiBundle\Example
+
+services:
+#    life_list_api.example:
+#        class: %life_list_api.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

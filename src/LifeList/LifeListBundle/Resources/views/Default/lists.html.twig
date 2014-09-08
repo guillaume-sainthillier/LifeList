@@ -1,0 +1,268 @@
+{% extends "::base.html"|extends(app.request) %}
+
+{% block title %}Mes listes !{% endblock %}
+{% block body %}
+    <!-- ListCtrl -->
+    <div ng-controller="ListCtrl">
+        
+        <!-- Message de chargement -->
+        <div class="text-center" ng-show="isLoading(lists)">
+            <h2>
+                <i class="fa fa-spinner fa-spin"></i> 
+                Chargement de vos listes ...
+            </h2>
+        </div>
+        <!-- ./Message de chargement -->
+        <div ng-cloak>            
+            <!-- Alertes formulaires listes -->
+            <alert ng-repeat="alert in alerts.alerts" type="[[alert.type]]" close="alerts.close($index)">[[ alert.msg ]]</alert>
+            <!-- ./Alertes formulaires listes -->
+
+            <!-- Ajout d'une liste -->
+            <div class="row" ng-hide="isLoading(lists)">
+                <div class="col-md-4 col-md-offset-4">
+                    <button class="btn btn-block btn-lg btn-success" 
+                            ng-show="!newList" 
+                            ng-disabled="isLoading(lists)" 
+                            ng-click="newList = true">
+                        <i class="fa fa-plus"></i> 
+                        Ajouter une Nouvelle Liste
+                    </button>
+                    <form ng-submit="addList()">
+                        <div class="input-group input-group-lg" ng-show="newList">
+                            <input type="text" 
+                                   ng-model="newlistname" 
+                                   class="form-control" 
+                                   placeholder="Nom de la liste..." 
+                                   focus-me="newList">
+                            <span class="input-group-btn">
+                                <button class="btn btn-success" type="submit">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- ./Ajout d'une liste -->
+
+            <!-- Listes -->
+            <div ng-repeat="list in lists | orderBy: ['name']" >
+                <h1 ng-mouseover="isHoveringNameList = true" 
+                    ng-mouseleave="isHoveringNameList = false" >                
+                    <form ng-submit="editList(list)" 
+                          ng-show="list.editing">
+                        <div class="input-group input-group-lg">
+                            <input type="text" 
+                                   ng-model="list.name" 
+                                   class="form-control" 
+                                   focus-me="list.editing">
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="submit" ng-disabled="isLoading(list)">
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+                    <div ng-show="!list.editing && isHoveringNameList" class="pull-right">                    
+                        <button class="btn btn-primary" ng-click="list.editing = true">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                        <button class="btn btn-danger" 
+                                ng-click="open(list)" 
+                                ng-controller="ModalDeleteListCtrl">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                    <span ng-show="!list.editing" ng-bind="list.name"></span>
+                </h1>
+                <hr />
+
+                <!-- Alertes formulaires todos -->
+                <alert ng-repeat="alert in list.alerts.alerts" 
+                       type="[[alert.type]]" 
+                       close="list.alerts.close($index)" >
+                    [[ alert.msg ]]
+                </alert>
+                <!-- ./Alertes formulaires todos -->
+
+                <!-- Tâches -->
+                <table class="table table-responsive table-striped"
+                       ng-mouseover="isHoveringTodos = true" 
+                       ng-mouseleave="isHoveringTodos = false">
+                    <thead>
+                        <tr>
+                            <th>
+                    <div class="clearfix prettycheckbox">
+                        <a ng-class="{'checked': list.checkall, 'disabled': !list.todos.length}" 
+                           ng-click="checkAllTodo(list)"></a>  
+                    </div>
+                    </th>
+                    <th>Nom</th>
+                    <th>Thèmes</th>
+                    <th class="text-right">
+                        <!-- Ajout tâche -->
+                        <button class="btn btn-success" 
+                                type="button" 
+                                ng-show="isHoveringTodos"
+                                ng-click="addTodo(list)" 
+                                ng-disabled="list.news">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                        <!-- ./Ajout tâche -->
+                    </th>
+                    </tr>
+                    </thead>
+                    <tbody>                    
+                        <tr ng-repeat="todo in list.todos | orderBy: ['completed','name'] | filter: list.statusFilter" 
+                            ng-class="{editing:todo.editing, success: todo.notSaved}" 
+                            ng-dblclick="todo.editing = true" 
+                            ng-mouseover="hoverTodo = true" 
+                            ng-mouseleave="hoverTodo = false" >
+                            <td>
+                                <div class="clearfix prettycheckbox">
+                                    <a ng-class="{'checked': todo.completed, 'disabled': isLoading(todo)}" 
+                                       ng-click="todo.completed = !todo.completed; editTodo(list, todo)"
+                                       ></a>
+                                </div>                            
+                            </td>
+                            <td ng-class="{completed: todo.completed}">
+                                <label class="view" ng-bind="todo.name"></label>
+                                <!-- Modification nom tâche -->
+                                <form class="edit" ng-submit="editTodo(list,todo)">
+                                    <input class="form-control" 
+                                           ng-model="todo.name" 
+                                           placeholder="Nouvelle Tâche..."
+                                           focus-me="todo.editing">
+                                </form>
+                                <!-- ./Modification nom tâche -->
+                            </td>
+                            <td>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <!-- Ajout thème -->
+                                        <form class="edit" ng-submit="addTag(list, todo)">
+                                            <input type="text" class="form-control edit" placeholder="Ajouter un thème" ng-model="todo.newtag" >
+                                        </form>
+                                        <!-- ./Ajout thème -->
+                                    </div>
+                                    <div class="col-md-8">
+                                        <span class="label label-primary" ng-repeat="tag in todo.tags">
+                                            [[ tag ]]
+                                            <i class="fa fa-times edit" 
+                                               ng-click="deleteTag(todo, $index)"></i>
+                                        </span> 
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-right delete">
+                                <div ng-hide="isLoading(todo)">
+                                    <div ng-show="hoverTodo">
+                                        <!-- Edition tâche -->
+                                        <button class="btn btn-primary btn-sm view" 
+                                                ng-click="todo.editing = true">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <!-- ./Edition tâche -->
+
+                                        <!-- Suppression tâche -->
+                                        <button class="btn btn-danger btn-sm view" 
+                                                ng-click="deleteTodo(list, todo)">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                        <!-- ./Suppression tâche -->
+                                    </div>
+
+                                    <!-- Modification tâche -->
+                                    <button class="btn btn-success btn-sm edit" 
+                                            ng-disabled="!todo.name" 
+                                            ng-click="editTodo(list,todo)">
+                                        <i class="fa fa-check"></i>
+                                    </button>
+                                    <!-- ./Modification tâche -->
+                                </div>
+
+                                <!-- Icône chargement -->
+                                <button ng-show="isLoading(todo)" class="btn btn-default" disabled="disabled">
+                                    <i class="fa fa-spin fa-spinner"></i>
+                                </button>
+                                <!-- ./Icône chargement -->
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">
+                                <!-- Filtres -->
+                                <div class="pull-right" ng-show="isHoveringTodos">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn" 
+                                               ng-repeat="statu in status" 
+                                               ng-class="{'active btn-info': statu.state == list.default_status, 
+                                                           'btn-default': statu.state != list.default_status, 
+                                                           'disabled': !list.todos.length}" 
+                                               ng-click="filterStatus(statu, list)"
+                                               >
+                                            <input type="radio" name="filtres" >
+                                            [[ statu.name ]]
+                                        </label >
+                                    </div>
+                                </div>
+                                <!-- ./Filtres -->
+
+                                <!-- Compteurs -->
+                                <span class="label" 
+                                      ng-class="{'label-success': list.remaining == 0, 'label-warning': list.remaining == 1, 'label-danger': list.remaining > 1}">
+                                    <strong>
+                                        <ng-pluralize count="list.remaining"
+                                                      when="{'0': 'Aucune', '1': '{}', 'other': '{}'}">
+                                        </ng-pluralize>
+                                    </strong>
+                                    <ng-pluralize count="list.remaining" 
+                                                  when="{'0': 'tâche restante
+                                                  ', '1': 'Tâche restante', 'other': 'Tâches restantes'}">
+                                    </ng-pluralize>
+                                </span>
+                                <!-- ./Compteurs -->
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <!-- ./Tâches -->
+                <br />
+                <br />
+            </div>
+            <!-- ./Listes -->
+        </div>
+    </div>
+    <!-- ./ListCtrl -->
+
+    <div ng-controller="ModalDeleteListCtrl">
+        <script type="text/ng-template" id="modalConfirmDeleteList.html">
+            <div class="modal-header">
+            <h3 class="modal-title">Confirmation</h3>
+            </div>
+            <div class="modal-body">
+            <p>En supprimant la liste <label ng-bind="list.name"></label>, vous supprimez toutes les tâches associées</p>
+            <p>Continuer ?</p>
+            </div>
+            <div class="modal-footer">
+            <button class="btn btn-danger" ng-click="ok(list)">OK</button>
+            <button class="btn btn-default" ng-click="cancel()">Annuler</button>
+            </div>
+        </script>
+    </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {% stylesheets 
+            'bundles/lifelistlifelist/css/prettyCheckable.css'
+            '@LifeListLifeListBundle/Resources/public/css/app.css'
+
+            filter='cssrewrite,?yui_css'
+            output='prod/css/app.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
+    {% endstylesheets %} 
+{% endblock %}
