@@ -27,4 +27,4 @@ monolog:
 parameters:
     router.request_context.host: todo.sainthillier.fr
     router.request_context.scheme: http
-    router.request_context.base_url: /
+    router.request_context.base_url: ~

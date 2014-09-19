@@ -4,7 +4,7 @@ lifeListApp.controller('MainCtrl', function($scope, AlertHandler) {
     $scope.alerts = AlertHandler.create();
     $scope.currentArea = "Bienvenue !";
 });
-lifeListApp.controller('AccueilCtrl', function($scope) {
+lifeListApp.controller('AccueilCtrl', function() {
 
 });
 
