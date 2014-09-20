@@ -1,7 +1,11 @@
 life_list_index:
     path:     /
     defaults: { _controller: LifeListLifeListBundle:Default:index }
+    requirements:
+        method: GET
 
 ll_lists_index:
     path:     /lists
     defaults: { _controller: LifeListLifeListBundle:Default:lists }
+    requirements:
+        method: GET
